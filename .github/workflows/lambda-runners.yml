@@ -2,7 +2,7 @@ name: Lambda Runners
 on:
   push:
     branches:
-      - develop
+      - main
   pull_request:
     paths:
       - .github/workflows/lambda-runners.yml
@@ -10,8 +10,8 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    container: node:14
+    runs-on: self-hosted
+    container: public.ecr.aws/bitnami/node:14
     defaults:
       run:
         working-directory: modules/runners/lambdas/runners
