@@ -203,6 +203,8 @@ export async function createRunner(runnerParameters: RunnerInputParameters): Pro
   logger.info('Created instance(s): ', instances.join(','), LogFields.print());
 
   const ssm = new SSM();
+  const delay = async (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
   for (const instance of instances) {
     await ssm
       .putParameter({
@@ -211,5 +213,6 @@ export async function createRunner(runnerParameters: RunnerInputParameters): Pro
         Type: 'SecureString',
       })
       .promise();
+    await delay(25);
   }
 }
