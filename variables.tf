@@ -22,6 +22,18 @@ variable "tags" {
 variable "environment" {
   description = "A name that identifies the environment, used as prefix and for tagging."
   type        = string
+  default     = null
+
+  validation {
+    condition     = var.environment == null
+    error_message = "The \"environment\" variable is no longer used. To migrate, set the \"prefix\" variable to the original value of \"environment\" and optionally, add \"Environment\" to the \"tags\" variable map with the same value."
+  }
+}
+
+variable "prefix" {
+  description = "The prefix used for naming resources"
+  type        = string
+  default     = "github-actions"
 }
 
 variable "enable_organization_runners" {
@@ -165,8 +177,14 @@ variable "kms_key_arn" {
   default     = null
 }
 
+variable "enable_runner_detailed_monitoring" {
+  description = "Should detailed monitoring be enabled for the runner. Set this to true if you want to use detailed monitoring. See https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch-new.html for details."
+  type        = bool
+  default     = false
+}
+
 variable "enabled_userdata" {
-  description = "Should the userdata script be enabled for the runner. Set this to false if you are using your own prebuilt AMI"
+  description = "Should the userdata script be enabled for the runner. Set this to false if you are using your own prebuilt AMI."
   type        = bool
   default     = true
 }
@@ -233,7 +251,14 @@ variable "block_device_mappings" {
     encrypted             = bool
     iops                  = number
   }))
-  default = []
+  default = [{
+    device_name           = "/dev/xvda"
+    delete_on_termination = true
+    volume_type           = "gp3"
+    volume_size           = 30
+    encrypted             = true
+    iops                  = null
+  }]
 }
 
 variable "ami_filter" {
@@ -389,12 +414,6 @@ variable "instance_max_spot_price" {
   default     = null
 }
 
-variable "volume_size" {
-  description = "Size of runner volume"
-  type        = number
-  default     = 30
-}
-
 variable "instance_type" {
   description = "[DEPRECATED] See instance_types."
   type        = string
@@ -490,6 +509,12 @@ variable "runner_enable_workflow_job_labels_check" {
   description = "If set to true all labels in the workflow job even are matched agaist the custom labels and GitHub labels (os, architecture and `self-hosted`). When the labels are not matching the event is dropped at the webhook."
   type        = bool
   default     = false
+}
+
+variable "runner_enable_workflow_job_labels_check_all" {
+  description = "If set to true all labels in the workflow job must match the GitHub labels (os, architecture and `self-hosted`). When false if __any__ label matches it will trigger the webhook. `runner_enable_workflow_job_labels_check` must be true for this to take effect."
+  type        = bool
+  default     = true
 }
 
 variable "runner_ec2_tags" {
@@ -615,4 +640,20 @@ variable "disable_runner_autoupdate" {
   description = "Disable the auto update of the github runner agent. Be-aware there is a grace period of 30 days, see also the [GitHub article](https://github.blog/changelog/2022-02-01-github-actions-self-hosted-runners-can-now-disable-automatic-updates/)"
   type        = bool
   default     = false
+}
+
+variable "lambda_runtime" {
+  description = "AWS Lambda runtime."
+  type        = string
+  default     = "nodejs14.x"
+}
+
+variable "lambda_architecture" {
+  description = "AWS Lambda architecture. Lambda functions using Graviton processors ('arm64') tend to have better price/performance than 'x86_64' functions. "
+  type        = string
+  default     = "x86_64"
+  validation {
+    condition     = contains(["arm64", "x86_64"], var.lambda_architecture)
+    error_message = "`lambda_architecture` value is not valid, valid values are: `arm64` and `x86_64`."
+  }
 }

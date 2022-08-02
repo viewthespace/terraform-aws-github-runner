@@ -6,6 +6,18 @@ variable "aws_region" {
 variable "environment" {
   description = "A name that identifies the environment, used as prefix and for tagging."
   type        = string
+  default     = null
+
+  validation {
+    condition     = var.environment == null
+    error_message = "The \"environment\" variable is no longer used. To migrate, set the \"prefix\" variable to the original value of \"environment\" and optionally, add \"Environment\" to the \"tags\" variable map with the same value."
+  }
+}
+
+variable "prefix" {
+  description = "The prefix used for naming resources"
+  type        = string
+  default     = "github-actions"
 }
 
 variable "github_app_webhook_secret_arn" {
@@ -101,6 +113,12 @@ variable "enable_workflow_job_labels_check" {
   default     = false
 }
 
+variable "workflow_job_labels_check_all" {
+  description = "If set to true all labels in the workflow job must match the GitHub labels (os, architecture and `self-hosted`). When false if __any__ label matches it will trigger the webhook. `enable_workflow_job_labels_check` must be true for this to take effect."
+  type        = bool
+  default     = true
+}
+
 variable "log_type" {
   description = "Logging format for lambda logging. Valid values are 'json', 'pretty', 'hidden'. "
   type        = string
@@ -143,4 +161,20 @@ variable "sqs_build_queue_fifo" {
   description = "Enable a FIFO queue to remain the order of events received by the webhook. Suggest to set to true for repo level runners."
   type        = bool
   default     = false
+}
+
+variable "lambda_runtime" {
+  description = "AWS Lambda runtime."
+  type        = string
+  default     = "nodejs14.x"
+}
+
+variable "lambda_architecture" {
+  description = "AWS Lambda architecture. Lambda functions using Graviton processors ('arm64') tend to have better price/performance than 'x86_64' functions. "
+  type        = string
+  default     = "x86_64"
+  validation {
+    condition     = contains(["arm64", "x86_64"], var.lambda_architecture)
+    error_message = "`lambda_architecture` value is not valid, valid values are: `arm64` and `x86_64`."
+  }
 }
