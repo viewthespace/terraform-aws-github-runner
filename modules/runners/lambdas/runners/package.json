@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-ssm": "^3.121.0",
-    "@octokit/auth-app": "3.6.1",
+    "@octokit/auth-app": "4.0.7",
     "@octokit/rest": "^18.12.0",
     "@octokit/types": "^6.38.1",
     "@types/aws-lambda": "^8.10.101",
