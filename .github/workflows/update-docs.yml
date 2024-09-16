@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # ratchet:actions/checkout@v4
 
       - name: Generate TF docs
-        uses: terraform-docs/gh-actions@f6d59f89a280fa0a3febf55ef68f146784b20ba0 # ratchet:terraform-docs/gh-actions@v1.0.0
+        uses: terraform-docs/gh-actions@cca78c27ac9e2b6545debf2ecae9df930fd3461c # ratchet:terraform-docs/gh-actions@v1.2.2
         with:
           find-dir: .
           git-commit-message: "docs: auto update terraform docs"
