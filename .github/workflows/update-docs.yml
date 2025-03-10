@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get installation token
-        uses: philips-software/app-token-action@a37926571e4cec6f219e06727136efdd073d8657 # ratchet:philips-software/app-token-action@v1.1.2
+        uses: philips-software/app-token-action@ddb544d2e22624a7d7a76fd9de3d4bc0a5f41660 # ratchet:philips-software/app-token-action@v2.0.1
         id: token
         with:
           app_id: ${{ secrets.FOREST_RELEASER_APP_ID }}
